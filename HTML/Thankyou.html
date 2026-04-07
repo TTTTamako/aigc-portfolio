@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感谢观看 | 幻彩流体交互</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&display=swap');
+
+        :root {
+            --bg-base: #0f172a;
+            --accent-1: #38bdf8;
+            --accent-2: #818cf8;
+            --accent-3: #fb7185;
+            --text-light: #f1f5f9;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-base);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: none;
+            user-select: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #bg-canvas { z-index: 1; opacity: 0.8; }
+        #particle-canvas { z-index: 2; }
+
+        /* 高级自定义光标 */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s linear;
+        }
+
+        /* 内容层 */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 2000px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4rem 5rem;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .hero-title {
+            font-size: 7.5rem;
+            font-weight: 800;
+            line-height: 0.8;
+            color: var(--text-light);
+            letter-spacing: -0.06em;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .char {
+            display: inline-block;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .char:hover {
+            transform: scale(1.3) translateY(-15px);
+            color: var(--accent-1);
+            text-shadow: 0 0 20px var(--accent-1);
+        }
+
+        .contact-btn {
+            position: relative;
+            padding: 1rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 100px;
+            color: white;
+            font-weight: 700;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .contact-btn:hover {
+            background: white;
+            color: var(--bg-base);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(56, 189, 248, 0.4);
+        }
+
+        /* 显眼的返回按钮样式 */
+        .back-btn-prominent {
+            margin-top: 2rem;
+            padding: 0.8rem 3rem;
+            background: transparent;
+            border: 2px solid var(--accent-1);
+            border-radius: 100px;
+            color: var(--accent-1);
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .back-btn-prominent:hover {
+            background: var(--accent-1);
+            color: var(--bg-base);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+            transform: scale(1.05);
+        }
+
+        .footer-info {
+            margin-top: 4rem;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.8em;
+        }
+
+        .nav-ui {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .ui-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <nav class="nav-ui">
+        <div class="ui-label">Status: Connected / Portfolio Ending</div>
+        <div class="flex gap-4">
+            <button onclick="location.reload()" class="text-white/50 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">Reset System</button>
+        </div>
+    </nav>
+
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="main-container">
+        <div class="glass-card" id="interactive-card">
+            <h1 class="hero-title" id="animated-title">
+                THANKS FOR<br>WATCHING.
+            </h1>
+            
+            <p class="text-white/40 text-lg font-medium max-w-md mx-auto leading-relaxed mb-10">
+                探索无界，灵感共生。<br>每一次视觉的终点，都是思考的新起点。
+            </p>
+
+            <div class="flex flex-col items-center">
+                <!-- 原有按钮组 -->
+                <div class="flex gap-6 justify-center">
+                    <button class="contact-btn" onclick="explode(event)">
+                        微信联络
+                    </button>
+                    <button class="contact-btn" onclick="explode(event)">
+                        简历获取
+                    </button>
+                </div>
+                
+                <!-- 移动到此处的 Back 按钮 -->
+                <button onclick="window.location.href='../index.html'" class="back-btn-prominent">
+                    返 回 首 页
+                </button>
+            </div>
+
+            <div class="footer-info">
+                Kinetic Art System · Core 2.0 · 2024
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bgCanvas = document.getElementById('bg-canvas');
+        const ptCanvas = document.getElementById('particle-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const ptCtx = ptCanvas.getContext('2d');
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        const card = document.getElementById('interactive-card');
+        const title = document.getElementById('animated-title');
+
+        let width, height;
+        let mouse = { x: -1000, y: -1000, lx: -1000, ly: -1000 };
+        let particles = [];
+        let ripples = [];
+        let time = 0;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            bgCanvas.width = ptCanvas.width = width;
+            bgCanvas.height = ptCanvas.height = height;
+            initParticles();
+        }
+
+        // 初始化背景粒子
+        function initParticles() {
+            particles = [];
+            const count = 120;
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    originX: Math.random() * width,
+                    originY: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 1,
+                    vy: (Math.random() - 0.5) * 1,
+                    size: Math.random() * 2 + 1,
+                    color: Math.random() > 0.5 ? '#38bdf8' : '#818cf8',
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        // 字符拆分
+        function setupTitle() {
+            const lines = title.innerHTML.trim().split('<br>');
+            title.innerHTML = lines.map(line => {
+                return `<div class="line">${line.split('').map(c => 
+                    c === ' ' ? '&nbsp;' : `<span class="char">${c}</span>`
+                ).join('')}</div>`;
+            }).join('');
+        }
+
+        // 绘制背景流体
+        function drawFluid() {
+            time += 0.005;
+            bgCtx.clearRect(0, 0, width, height);
+            
+            const layers = [
+                { color: '#0c4a6e', speed: 1.0, scale: 0.5 },
+                { color: '#1e1b4b', speed: 0.7, scale: 0.8 },
+                { color: '#4c1d95', speed: 0.5, scale: 1.2 }
+            ];
+
+            layers.forEach((layer, i) => {
+                const x = width / 2 + Math.sin(time * layer.speed + i) * width * 0.3;
+                const y = height / 2 + Math.cos(time * layer.speed * 0.8 + i) * height * 0.3;
+                const grad = bgCtx.createRadialGradient(x, y, 0, x, y, width * layer.scale);
+                grad.addColorStop(0, layer.color);
+                grad.addColorStop(1, 'transparent');
+                bgCtx.globalCompositeOperation = 'screen';
+                bgCtx.fillStyle = grad;
+                bgCtx.fillRect(0, 0, width, height);
+            });
+        }
+
+        // 绘制粒子系统
+        function drawParticles() {
+            ptCtx.clearRect(0, 0, width, height);
+            
+            particles.forEach(p => {
+                const dx = mouse.x - p.x;
+                const dy = mouse.y - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 250) {
+                    const force = (250 - dist) / 250;
+                    p.vx += (dx / dist) * force * 0.5;
+                    p.vy += (dy / dist) * force * 0.5;
+                }
+
+                p.vx *= 0.95;
+                p.vy *= 0.95;
+                
+                p.x += p.vx + Math.sin(time + p.originX) * 0.2;
+                p.y += p.vy + Math.cos(time + p.originY) * 0.2;
+
+                ptCtx.beginPath();
+                ptCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ptCtx.fillStyle = p.color;
+                ptCtx.globalAlpha = p.alpha;
+                ptCtx.fill();
+
+                particles.forEach(p2 => {
+                    const d2 = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    if (d2 < 80) {
+                        ptCtx.beginPath();
+                        ptCtx.moveTo(p.x, p.y);
+                        ptCtx.lineTo(p2.x, p2.y);
+                        ptCtx.strokeStyle = p.color;
+                        ptCtx.globalAlpha = (80 - d2) / 80 * 0.2;
+                        ptCtx.stroke();
+                    }
+                });
+            });
+
+            ripples.forEach((r, i) => {
+                r.life -= 0.02;
+                r.radius += 5;
+                if (r.life <= 0) { ripples.splice(i, 1); return; }
+                ptCtx.beginPath();
+                ptCtx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ptCtx.strokeStyle = `rgba(255, 255, 255, ${r.life})`;
+                ptCtx.lineWidth = 2;
+                ptCtx.stroke();
+            });
+        }
+
+        function explode(e) {
+            ripples.push({ x: e.clientX, y: e.clientY, radius: 0, life: 1.0 });
+            particles.forEach(p => {
+                const dx = p.x - e.clientX;
+                const dy = p.y - e.clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const force = 1000 / dist;
+                p.vx += (dx / dist) * force;
+                p.vy += (dy / dist) * force;
+            });
+        }
+
+        function updateUI() {
+            mouse.lx = lerp(mouse.lx, mouse.x, 0.1);
+            mouse.ly = lerp(mouse.ly, mouse.y, 0.1);
+            
+            cursor.style.transform = `translate(${mouse.x - 10}px, ${mouse.y - 10}px)`;
+            follower.style.transform = `translate(${mouse.lx - 20}px, ${mouse.ly - 20}px)`;
+
+            const rx = (window.innerHeight / 2 - mouse.y) / 40;
+            const ry = (mouse.x - window.innerWidth / 2) / 40;
+            card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+        }
+
+        function lerp(a, b, n) { return (1 - n) * a + n * b; }
+
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        function animate() {
+            drawFluid();
+            drawParticles();
+            updateUI();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        window.onload = () => {
+            resize();
+            setupTitle();
+            animate();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuYu | Identity & DNA Hybrid System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Noto+Sans+SC:wght@300;900&display=swap');
+
+        :root {
+            --brand-yellow: #FFD02E;
+            --brand-black: #0A0A0A;
+            --brand-white: #FFFFFF;
+            --grid-line: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--brand-black);
+            color: var(--brand-white);
+            font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            cursor: default;
+        }
+
+        .font-brand {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* 极细工业网格 */
+        .grid-bg {
+            background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* 强化氛围发光 */
+        .hero-glow {
+            text-shadow: 0 0 40px rgba(255, 208, 46, 0.4);
+        }
+
+        /* 响应式网格容器 */
+        .layout-container {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            height: 100vh;
+            min-height: 900px;
+        }
+
+        @media (max-width: 1024px) {
+            .layout-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        /* DNA卡片的高级玻璃拟态 */
+        .dna-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* 突出Logo卡片的特殊样式 */
+        .logo-highlight-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,208,46,0.05) 100%);
+            border: 1.5px solid rgba(255, 208, 46, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .dna-card:hover {
+            border-color: rgba(255, 208, 46, 0.6);
+            transform: translateX(-8px);
+        }
+
+        .spec-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: #777;
+            font-weight: 800;
+        }
+
+        /* 角色卡片 */
+        .role-card {
+            aspect-ratio: 3/4;
+            border-radius: 30px;
+            overflow: hidden;
+            background: #F8F8F8;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #111;
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+        }
+
+        .role-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+
+        .role-bg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; height: 60%;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            z-index: 1;
+        }
+
+        .role-image {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .role-image img {
+            max-height: 90%;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 周边产品展示卡片 */
+        .merch-grid-item {
+            position: relative;
+            background: #111;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .merch-grid-item:hover {
+            border-color: var(--brand-yellow);
+        }
+
+        .merch-image-container {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: radial-gradient(circle at center, #222, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .merch-image-container img {
+            width: 70%;
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .merch-grid-item:hover .merch-image-container img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* 呼吸效果 */
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,208,46,0.1); }
+            50% { box-shadow: 0 0 40px rgba(255,208,46,0.3); }
+        }
+        .animate-glow {
+            animation: glowPulse 3s infinite ease-in-out;
+        }
+
+        /* 项目导航按钮样式 */
+        .nav-project-btn {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .nav-project-btn:hover {
+            background: #111;
+            border-color: var(--brand-yellow);
+        }
+
+        .nav-project-btn .btn-arrow {
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .nav-project-btn:hover .btn-arrow-left {
+            transform: translateX(-10px);
+        }
+
+        .nav-project-btn:hover .btn-arrow-right {
+            transform: translateX(10px);
+        }
+
+        .nav-project-btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,208,46,0.05), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+
+        .nav-project-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        /* 滚动入场 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--brand-black); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-yellow); }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 px-10 py-8 flex justify-between items-center mix-blend-difference">
+        <div class="text-2xl font-brand font-black tracking-tighter uppercase">YuYu<span class="text-[var(--brand-yellow)]">.</span></div>
+        <div class="hidden md:flex space-x-12 text-[10px] font-bold uppercase tracking-[0.5em]">
+            <a href="#hero" class="text-[var(--brand-yellow)]">01 Identity</a>
+            <a href="#concept" class="hover:text-[var(--brand-yellow)] transition duration-500 opacity-60 text-white">02 Concept</a>
+            <a href="#extension" class="hover:text-[var(--brand-yellow)] transition duration-500 opacity-60 text-white">03 Characters</a>
+            <a href="#merch" class="hover:text-[var(--brand-yellow)] transition duration-500 opacity-60 text-white">04 Merchandise</a>
+            <a href="#color" class="hover:text-[var(--brand-yellow)] transition duration-500 opacity-60 text-white">05 Spec</a>
+        </div>
+    </nav>
+
+    <!-- 首页合并版 (Hero + Logo DNA) -->
+    <main id="hero" class="layout-container grid-bg border-b border-white/10">
+        
+        <!-- 左侧：3D形象 -->
+        <section class="relative flex flex-col justify-center items-center p-12 border-r border-white/5 overflow-hidden bg-[radial-gradient(circle_at_center,rgba(255,208,46,0.03)_0%,transparent_70%)]">
+            <div class="z-10 animate__animated animate__fadeIn">
+                <div class="relative group cursor-crosshair">
+                    <img src="../assets/Logo大.png" alt="YuYu 3D Hero" class="w-full max-w-[550px] drop-shadow-[0_35px_60px_rgba(0,0,0,0.6)] transform transition-transform duration-700 group-hover:scale-[1.05]">
+                </div>
+                
+                <div class="mt-4 text-left">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="px-3 py-1 bg-white/5 border border-white/10 text-[9px] font-bold tracking-[0.3em] uppercase rounded-full">Primary Identity</span>
+                        <div class="h-[1px] w-12 bg-white/20"></div>
+                    </div>
+                    <h1 class="text-8xl font-brand font-black tracking-tighter uppercase mb-2 hero-glow leading-[0.85]">YuYu</h1>
+                    <p class="text-lg font-light tracking-[0.6em] text-gray-500 uppercase mt-4">Stranger Family IP System</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 右侧：DNA 面板 -->
+        <section class="relative flex flex-col justify-center p-8 md:p-14 space-y-8 bg-black/40 backdrop-blur-md">
+            
+            <!-- 模块 01: Logo Logic -->
+            <div class="dna-card logo-highlight-card animate__animated animate__fadeInRight">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="spec-label text-[var(--brand-yellow)]">Identity Core</span>
+                        <h3 class="text-2xl font-black uppercase mt-1 tracking-tight">标志 DNA 结构</h3>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[var(--brand-yellow)] font-black italic text-3xl leading-none">01</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-8">
+                    <div class="relative group shrink-0">
+                        <div class="absolute -inset-4 bg-[var(--brand-yellow)] opacity-20 blur-2xl rounded-full animate-pulse"></div>
+                        <div class="w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center bg-white rounded-[32px] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.3)] transform transition duration-500 group-hover:rotate-12 animate-glow relative z-10">
+                            <img src="../assets/Logo图标.png" alt="Logo Icon" class="max-w-full max-h-full scale-110">
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 text-center sm:text-left">
+                        <p class="text-[12px] leading-relaxed text-gray-300 uppercase tracking-wide mb-6 font-medium">
+                            核心符号提取自自然花卉的几何重构。通过对称美的模数化处理，确立了品牌在任何尺寸下的极致识别度。
+                        </p>
+                        <div class="grid grid-cols-4 gap-1">
+                            <div class="h-1 bg-[var(--brand-yellow)]"></div>
+                            <div class="h-1 bg-[var(--brand-yellow)] opacity-60"></div>
+                            <div class="h-1 bg-[var(--brand-yellow)] opacity-30"></div>
+                            <div class="h-1 bg-white/10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块 02: Color Spec -->
+            <div class="dna-card animate__animated animate__fadeInRight animate-delay-1">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <span class="spec-label">Chromatic Standard</span>
+                        <h3 class="text-lg font-bold uppercase mt-1">色彩标准</h3>
+                    </div>
+                    <span class="text-white/20 font-black italic text-xl">02</span>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="space-y-2">
+                        <div class="h-14 bg-[var(--brand-yellow)] rounded-xl"></div>
+                        <p class="text-[9px] font-bold text-center opacity-50 tracking-tighter">#FFD02E</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-14 bg-[#111111] border border-white/10 rounded-xl"></div>
+                        <p class="text-[9px] font-bold text-center opacity-50 tracking-tighter">#111111</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-14 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-center text-[8px] opacity-30">REVE</div>
+                        <p class="text-[9px] font-bold text-center opacity-50 tracking-tighter">Accent</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块 03: Grid Logic -->
+            <div class="dna-card animate__animated animate__fadeInRight animate-delay-2">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="spec-label">Infinite Progress</span>
+                        <h3 class="text-lg font-bold uppercase mt-1">排版与网格</h3>
+                    </div>
+                    <span class="text-white/20 font-black italic text-xl">03</span>
+                </div>
+                <p class="text-[10px] text-gray-500 font-light leading-relaxed mb-4">
+                    基于 40PX 工业模数，构建了动态的 UI 与平面排版系统，确保品牌基因在多媒介中自由延展。
+                </p>
+                <div class="flex items-center space-x-1 opacity-40">
+                    <div class="w-1/4 h-[1px] bg-white"></div>
+                    <div class="w-2 h-2 rounded-full border border-white"></div>
+                    <div class="flex-1 h-[1px] bg-white"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Project Concept -->
+    <section id="concept" class="py-40 px-10 bg-white text-black rounded-t-[60px] -mt-16 relative z-20">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-24 items-center">
+                <div class="lg:w-1/2">
+                    <h3 class="text-6xl font-brand font-black mb-10 leading-[1] uppercase tracking-tighter">YuYu IP<br><span class="text-gray-300">Design Lab</span></h3>
+                    <div class="space-y-8 text-lg font-light leading-relaxed text-gray-700">
+                        <p>这不仅是一个基于随和形象的IP，更是一次关于“生命力”与“未来性”的视觉实验。我们通过对平凡角色的刻画，创造出充满一切未来想象力的 YuYu 角色。</p>
+                        <p class="font-bold text-black italic">在核心价值观中，“平凡”代表了具有一切可能的包容性和可塑性。</p>
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <div class="bg-gray-50 rounded-2xl h-[500px] flex items-center justify-center p-16 shadow-inner">
+                        <img src="../assets/Logo大.png" class="max-h-full drop-shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Role Extension -->
+    <section id="extension" class="py-40 px-10 bg-black">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col items-center mb-32">
+                <h3 class="text-[12vw] font-brand font-black uppercase tracking-tighter opacity-10 leading-none select-none">Characters</h3>
+                <h4 class="text-3xl font-bold -mt-12 tracking-[0.3em] text-[var(--brand-yellow)]">角色延展系列</h4>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_01</span>
+                    </div>
+                    <div class="role-bg bg-purple-400/20"></div>
+                    <div class="role-image"><img src="../assets/普通.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Classic</p><p class="text-xl font-black uppercase">普通人</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_02</span>
+                    </div>
+                    <div class="role-bg bg-blue-400/20"></div>
+                    <div class="role-image"><img src="../assets/宇航员.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Space</p><p class="text-xl font-black uppercase">太空漫游</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_03</span>
+                    </div>
+                    <div class="role-bg bg-red-400/20"></div>
+                    <div class="role-image"><img src="../assets/医生.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Medical</p><p class="text-xl font-black uppercase">守护医生</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_04</span>
+                    </div>
+                    <div class="role-bg bg-orange-400/20"></div>
+                    <div class="role-image"><img src="../assets/消防员.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Rescue</p><p class="text-xl font-black uppercase">消防先锋</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_05</span>
+                    </div>
+                    <div class="role-bg bg-green-400/20"></div>
+                    <div class="role-image"><img src="../assets/厨师.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Chef</p><p class="text-xl font-black uppercase">五星主厨</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <span class="text-[10px] font-black tracking-widest uppercase opacity-20">ID_06</span>
+                    </div>
+                    <div class="role-bg bg-cyan-400/20"></div>
+                    <div class="role-image"><img src="../assets/运动.png"></div>
+                    <div class="z-10 relative flex justify-between items-end">
+                        <div class="text-left"><p class="text-[10px] font-bold text-gray-400 uppercase">Sport</p><p class="text-xl font-black uppercase">极限运动</p></div>
+                        <div class="text-[30px] font-brand font-black opacity-10">YU</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 新增模块：周边延展 (Merchandise) -->
+    <section id="merch" class="py-40 px-10 bg-white text-black relative z-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row justify-between items-end mb-24 gap-10">
+                <div class="max-w-2xl">
+                    <span class="px-4 py-1.5 bg-black text-[var(--brand-yellow)] text-[10px] font-black tracking-[0.3em] uppercase rounded-full mb-8 inline-block">Merchandise Extension</span>
+                    <h3 class="text-6xl md:text-8xl font-brand font-black uppercase tracking-tighter leading-[0.9]">Lifestyle<br>Hybrid.</h3>
+                </div>
+                <div class="pb-4 border-b-2 border-black w-full lg:w-48 text-right">
+                    <span class="text-sm font-bold uppercase tracking-widest">Collection 25/26</span>
+                </div>
+            </div>
+
+            <!-- 周边网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 单个产品: 潮流服饰 -->
+                <div class="merch-grid-item group">
+                    <img src="../assets/周边.jpg" alt="T-Shirt" class="opacity-80 group-hover:opacity-100">
+                    <div class="p-8 bg-black text-white">
+                        <div class="flex justify-between items-start mb-4">
+                            <h5 class="text-xl font-black uppercase">办公桌面搭档 / Desk Accessories</h5>
+                            <span class="text-[10px] border border-white/20 px-2 py-0.5 rounded">01/03</span>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed font-light mb-6">采用 260G 重磅材料料，以桌面搭档将欢乐带去家中。</p>
+                        <div class="flex justify-between items-center text-[10px] font-bold opacity-30">
+                            <span>MATERIAL: COTTON</span>
+                            <span>COLOR: NEON YELLOW</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 单个产品: 盲盒公仔 (示意) -->
+                <div class="merch-grid-item group">
+                        <img src="../assets/周边2.jpg" alt="T-Shirt" class="opacity-80 group-hover:opacity-100">
+                    <div class="p-8 bg-black text-white">
+                        <div class="flex justify-between items-start mb-4">
+                            <h5 class="text-xl font-black uppercase">户外搭档 / Outdoor Partner</h5>
+                            <span class="text-[10px] border border-white/20 px-2 py-0.5 rounded">02/03</span>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed font-light mb-6">环保软胶材质，防水工艺，多涂装工艺复刻 IP 原型。</p>
+                        <div class="flex justify-between items-center text-[10px] font-bold opacity-30">
+                            <span>MATERIAL: VINYL</span>
+                            <span>SIZE: 150MM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 单个产品: 数码周边 -->
+                <div class="merch-grid-item group">
+                        <img src="../assets/周边3.png" alt="T-Shirt" class="opacity-80 group-hover:opacity-100">
+                    <div class="p-8 bg-black text-white">
+                        <div class="flex justify-between items-start mb-4">
+                            <h5 class="text-xl font-black uppercase">温柔裹护 / Gentle Wrap</h5>
+                            <span class="text-[10px] border border-white/20 px-2 py-0.5 rounded">03/03</span>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed font-light mb-6">温柔裹护，将欢乐带入睡梦中去。</p>
+                        <div class="flex justify-between items-center text-[10px] font-bold opacity-30">
+                            <span>SERIES: UNLIMITED</span>
+                            <span>EDITION: LIMITED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Color Spec -->
+    <section id="color" class="py-40 px-10 border-t border-white/5 bg-black">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
+            <div class="lg:col-span-4">
+                <h3 class="text-6xl font-brand font-black mb-8 uppercase leading-none">Color<br><span class="text-[var(--brand-yellow)]">System</span></h3>
+                <p class="text-gray-500 font-light text-sm tracking-wider">确立了 IP 在全媒介传播中的色彩稳定性。</p>
+            </div>
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-[var(--brand-yellow)] h-48 rounded-[32px] p-10 text-black flex flex-col justify-between relative overflow-hidden group cursor-pointer">
+                    <span class="text-2xl font-black font-brand z-10">#FFD02E</span>
+                    <div class="z-10 font-bold opacity-70">RGB: 255 / 208 / 46</div>
+                    <div class="absolute right-[-20px] bottom-[-20px] text-[150px] font-brand font-black text-white opacity-20 group-hover:scale-110 transition-transform duration-700">YU</div>
+                </div>
+                <div class="bg-[#111111] h-32 rounded-[32px] p-10 border border-white/10 text-white flex justify-between items-center">
+                    <span class="text-xl font-black font-brand">#111111</span>
+                    <span class="text-xs opacity-40 uppercase tracking-widest">Neutral Base</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 新增：项目导航跳转功能 -->
+    <section class="border-t border-white/10 bg-black">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- 上一个项目 -->
+            <a href="../index.html" class="nav-project-btn p-16 md:p-24 flex flex-col items-start border-b md:border-b-0 md:border-r border-white/10 group">
+                <div class="flex items-center gap-4 mb-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6 btn-arrow btn-arrow-left" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <span class="text-[10px] font-black uppercase tracking-[0.4em]">PREV PROJECT</span>
+                </div>
+                <h5 class="text-4xl font-brand font-black uppercase tracking-tighter text-gray-500 group-hover:text-white transition-colors">AI + Web 动画制作全链路工作流<br>Animation</h5>
+            </a>
+            <!-- 下一个项目 -->
+            <a href="Thankyou.html" class="nav-project-btn p-16 md:p-24 flex flex-col items-end text-right group">
+                <div class="flex items-center gap-4 mb-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <span class="text-[10px] font-black uppercase tracking-[0.4em]">NEXT PROJECT</span>
+                    <svg class="w-6 h-6 btn-arrow btn-arrow-right" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
+                <h5 class="text-4xl font-brand font-black uppercase tracking-tighter text-gray-500 group-hover:text-[var(--brand-yellow)] transition-colors">感谢观看<br>Thank You</h5>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-24 px-10 bg-black text-center">
+        <div class="text-3xl font-brand font-black mb-4 uppercase">YuYu<span class="text-[var(--brand-yellow)]">.</span></div>
+        <p class="text-gray-600 text-[10px] font-bold tracking-[0.5em] uppercase">© 2026 HAPPY HUMAN All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal, section > div, .dna-card, .role-card, .nav-project-btn");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveals[i].classList.add("active", "animate__animated", "animate__fadeInUp");
+                    reveals[i].style.opacity = "1";
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        window.onload = () => reveal();
+    </script>
+</body>
+</html>
